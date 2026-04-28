@@ -9,3 +9,5 @@ npx expo install expo-sqlite
 npm install
 <br>
 na pasta main
+<br><br>
+usar o expo go mobile
