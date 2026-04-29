@@ -13,7 +13,27 @@ export default function App() {
      async function Main () {
        const db = await Banco();
       await createTable(db);
-      };
+     insertUsuario(db,  "unit4" , "stoopid4@email.com" , "4")    ;
+
+     // exibir campos down here
+   //  const resp = await selectUsuarios (db) ;
+    // console.log(resp);
+   //exibir por id
+    // let idCampo = await selectUsuarioById(db,3);
+   // console.log(idCampo)
+      
+    //  let nomeCampo = await selectUsuarioNome(db, "unit4" )
+    //  console.log(nomeCampo);
+
+       let delCampo = await deleteUsuario(db, 3 )
+      console.log(delCampo);
+  
+  
+  
+  
+  
+  };
+
 
 
 
