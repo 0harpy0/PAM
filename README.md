@@ -9,5 +9,9 @@ npx expo install expo-sqlite
 npm install
 <br>
 na pasta main
-<br><br>
+<br>
+npx expo install --fix
+<br>
 usar o expo go mobile
+<br>
+sla man, triste
