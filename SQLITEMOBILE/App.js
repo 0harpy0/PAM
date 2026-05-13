@@ -31,9 +31,16 @@ export default function App() {
   // CAMPOS
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [id, setID] = useState('');
+
 
   // LISTA
   const [usuarios, setUsuarios] = useState([]);
+  // PEDIDOS
+const [pedidos, setPedidos] = useState([]);
+const [pedido, setPedido] = useState('');
+const [idPedido, setIdPedido] = useState(null);
+const [editandoPedido, setEditandoPedido] = useState(false);
 
   // EDIÇÃO
   const [editando, setEditando] = useState(false);
@@ -115,6 +122,9 @@ export default function App() {
 
     setEmail(usuario.EMAIL_US);
 
+    setID(usuario.ID_US);
+
+
     setIdEditando(usuario.ID_US);
 
     setEditando(true);
@@ -126,6 +136,8 @@ export default function App() {
     setNome('');
 
     setEmail('');
+
+    setID('');
 
     setEditando(false);
 
@@ -198,7 +210,10 @@ export default function App() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.disabledButton}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => setTela('pedidos')}
+        >      
           <Text style={styles.buttonText}>
             Pedidos (em breve)
           </Text>
@@ -217,6 +232,177 @@ export default function App() {
     );
   }
 
+
+  // =========================================
+// CRUD PEDIDOS
+// =========================================
+
+if (tela === 'pedidos') {
+
+  function salvarPedido() {
+
+    if (!pedido) {
+      Alert.alert('Digite um pedido');
+      return;
+    }
+
+    if (editandoPedido) {
+
+      const novaLista = pedidos.map((item) => {
+
+        if (item.id === idPedido) {
+          return {
+            id: idPedido,
+            nome: pedido
+          };
+        }
+
+        return item;
+      });
+
+      setPedidos(novaLista);
+
+      setEditandoPedido(false);
+
+      setIdPedido(null);
+
+    } else {
+
+      const novoPedido = {
+        id: Date.now(),
+        nome: pedido,
+      };
+
+      setPedidos([...pedidos, novoPedido]);
+    }
+
+    setPedido('');
+  }
+
+  function editarPedido(item) {
+
+    setPedido(item.nome);
+
+    setIdPedido(item.id);
+
+    setEditandoPedido(true);
+  }
+
+  function excluirPedido(id) {
+
+    const lista = pedidos.filter(
+      (item) => item.id !== id
+    );
+
+    setPedidos(lista);
+  }
+
+  function cancelarPedido() {
+
+    setPedido('');
+
+    setEditandoPedido(false);
+
+    setIdPedido(null);
+  }
+
+  return (
+
+    <View style={styles.container}>
+
+      <Text style={styles.title}>
+        CRUD Pedidos
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Digite um pedido"
+        placeholderTextColor="#999"
+        value={pedido}
+        onChangeText={setPedido}
+      />
+
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={salvarPedido}
+      >
+        <Text style={styles.buttonText}>
+          {editandoPedido ? 'Atualizar' : 'Cadastrar'}
+        </Text>
+      </TouchableOpacity>
+
+      {editandoPedido && (
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={cancelarPedido}
+        >
+          <Text style={styles.buttonText}>
+            Cancelar
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      <FlatList
+        style={{ width: '100%' }}
+        data={pedidos}
+        keyExtractor={(item) =>
+          item.id.toString()
+        }
+
+        renderItem={({ item }) => (
+
+          <View style={styles.card}>
+
+            <Text style={styles.cardTitle}>
+              Pedido #{item.id}
+            </Text>
+
+            <Text style={styles.cardText}>
+              {item.nome}
+            </Text>
+
+            <View style={styles.actions}>
+
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => editarPedido(item)}
+              >
+                <Text style={styles.buttonText}>
+                  Editar
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() =>
+                  excluirPedido(item.id)
+                }
+              >
+                <Text style={styles.buttonText}>
+                  Excluir
+                </Text>
+              </TouchableOpacity>
+
+            </View>
+
+          </View>
+
+        )}
+      />
+
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => setTela('menu')}
+      >
+        <Text style={styles.buttonText}>
+          Voltar ao Menu
+        </Text>
+      </TouchableOpacity>
+
+    </View>
+  );
+}
+
   // =========================================
   // CRUD USUÁRIOS
   // =========================================
@@ -230,6 +416,14 @@ export default function App() {
       </Text>
 
       {/* INPUTS */}
+
+      <TextInput
+        style={styles.input}
+        placeholder="ID"
+        placeholderTextColor="#999"
+        value={id}
+        onChangeText={setID}
+      />
 
       <TextInput
         style={styles.input}
@@ -252,7 +446,18 @@ export default function App() {
       <TouchableOpacity
         style={styles.saveButton}
         onPress={salvarUsuario}
+        
       >
+        {editando && (
+  <TouchableOpacity
+    style={styles.cancelButton}
+    onPress={limparCampos}
+  >
+    <Text style={styles.buttonText}>
+      Cancelar
+    </Text>
+  </TouchableOpacity>
+)}
         <Text style={styles.buttonText}>
           {editando ? 'Atualizar' : 'Cadastrar'}
         </Text>
@@ -340,7 +545,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1f1f1f',
     padding: 20,
-    paddingTop: 60,
+justifyContent: 'center',
     alignItems: 'center',
   },
 
@@ -452,4 +657,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  cancelButton: {
+  backgroundColor: '#777',
+  width: '100%',
+  padding: 15,
+  borderRadius: 10,
+  alignItems: 'center',
+  marginBottom: 20,
+},
+
 });
+
+
