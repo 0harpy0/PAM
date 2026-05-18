@@ -34,8 +34,19 @@ async function createTable(db: SQLite.SQLiteDatabase) {
                     EMAIL_US VARCHAR(100)
                 );
 `
-        ) ;
+        )
+         await db.execAsync(`
+            PRAGMA journal_mode = WAL;
+                CREATE TABLE IF NOT EXISTS PEDIDOS (
+                    ID_US  VARCHAR(100),
+                    Pedido_US VARCHAR(100),
+                );
+`
+        )
+         ;
         console.log('Tabela USUARIO criada');
+        console.log('Tabela PEDIDOS criada');
+
     } catch (error) {
         console.log('Erro ao criar tabela', error);
 
@@ -59,7 +70,7 @@ async function insertUsuario(db: SQLite.SQLiteDatabase,
     }
 }
 
-//----------------------------------------------------------------------------
+//----------------------------------a------------------------------------------
 
 // Exibir todos os usuarios
 
@@ -130,7 +141,98 @@ async function updateUsuario(db: SQLite.SQLiteDatabase, id: number, nome: string
 
 
 
+
+
+
+
+/////////
+
+
+
+//Inserir novo Pedido
+
+async function insertPedido(db: SQLite.SQLiteDatabase,
+    Pedido: string, ID: string) {
+    try {
+        await db.runAsync(
+            " INSERT INTO PEDIDOS (Pedido_US, ID_US) VALUES ( ? , ? )",
+             Pedido, ID);
+        console.log('Pedido inserido');
+
+    } catch (error) {
+        console.log('Erro ao inserir Pedido', error);
+    }
+}
+
+//----------------------------------------------------------------------------
+
+
+// Exibir todos os Pedidos
+
+
+async function selectPedido(db: SQLite.SQLiteDatabase) {
+    try {
+        const result = await db.getAllAsync('SELECT * FROM Pedido ORDER BY ID_US DESC');
+        console.log('Pedido encontrados');
+        return result;
+    } catch (erro) {
+        console.log('Erro ao buscar Pedido', erro);
+    }}
+
+//----------------------------------------------------------------------------
+
+
+
+// Exibir Pedido pelo ID
+async function selectPedidoById(db: SQLite.SQLiteDatabase, id: number){
+    try {
+        const result = await db.getFirstAsync('SELECT * FROM Pedido WHERE ID_US = ?', id);
+        console.log('Pedido encontrado');
+        return result;
+    } catch (erro) {
+        console.log('Erro ao buscar Pedido', erro);
+    }
+}
+
+//----------------------------------------------------------------------------
+
+
+// Excluir Pedido pelo ID
+async function deletePedido(db: SQLite.SQLiteDatabase, id: number) {
+    try {
+        await db.runAsync(' DELETE FROM Pedido WHERE ID_US = ? ', id);
+        console.log('Pedido excluido');
+    } catch (error) {
+        console.log('Erro ao excluir Pedido', error);
+    }
+}
+//----------------------------------------------------------------------------
+
+
+//ALTERAR USUARIO
+async function updatePedido(db: SQLite.SQLiteDatabase, id: number, Pedido: string) {
+    try {
+        await db.runAsync(
+            'UPDATE Pedido SET Pedido_US = ?,  WHERE ID_US = ?',
+            Pedido,
+            id
+        );
+        console.log('Pedido atualizado');
+    } catch (error) {
+        console.log('Erro ao atualizar Pedido', error);
+    }
+}
+
+//----------------------------------------------------------------------------
+
+
 export {
     Banco, createTable, insertUsuario, selectUsuarios, selectUsuarioById, selectUsuarioNome
-    , deleteUsuario, updateUsuario
+    , deleteUsuario, updateUsuario,
+
+
+
+         insertPedido, selectPedido, selectPedidoById,
+     deletePedido, updatePedido,
+
 };
